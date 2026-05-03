@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
-    name: {
+    type: {
         type: String,
         required: true
     },
-    price: {
+    pricePerDay: {
         type: Number,
         required: true,
         min: 0
@@ -14,17 +14,20 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    stock: {
+    fuelType:{
+        type: String,
+        required: true
+    },
+    rating:{
         type: Number,
-        required: true,
+        default: 0,
         min: 0,
-        default: 0
     },
     image: {
         type: String,
         default: "https://via.placeholder.com/300x200?text=Product"
     },
-    createdAt: {
+    available: {
         type: Date,
         default: Date.now
     }

@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -14,14 +13,19 @@ const orderRoutes = require('./routes/orderRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const quizRoutes = require('./routes/quizRoutes');
 
-
 // Import des middlewares
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-// ========== MIDDLEWARE GLOBAL ==========
-app.use(cors());
+// ========== CORS CORRIGÉ (AUTORISE TON FRONTEND) ==========
+app.use(cors({
+  origin: 'http://localhost:5173',  // Ton frontend React/Vite
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -36,15 +40,17 @@ app.use('/api', orderRoutes);
 app.use('/api', profileRoutes);
 app.use('/api', quizRoutes);
 
-// ========== GESTIONNAIRE D'ERREURS (toujours à la fin) ==========
+// ========== ROUTE DE TEST POUR VÉRIFIER LA CONNEXION ==========
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Backend fonctionne' });
+});
+
+// ========== GESTIONNAIRE D'ERREURS ==========
 app.use(errorHandler);
 
 // ========== START SERVER ==========
-// backend/server.js
 const PORT = process.env.PORT || 3000;
-
-// ⚠️ IMPORTANT : '0.0.0.0' au lieu de 'localhost'
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
-  console.log(`📍 Accessible sur votre réseau à http://192.168.1.9:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`✅ CORS activé pour http://localhost:5173`);
 });
