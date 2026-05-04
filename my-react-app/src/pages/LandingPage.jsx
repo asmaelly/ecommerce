@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-[#111111] font-sans">
+    <div className="min-h-screen bg-[#f0f0f0] text-[#111111] font-sans">
 
       <header className="flex justify-between items-center px-10 py-6 border-b border-[#E5E7EB] bg-white">
         <h2 className="text-xl font-medium tracking-wide">
@@ -13,13 +13,13 @@ const LandingPage = () => {
           <Link to="/login" className="px-5 py-2 border border-[#E5E7EB] rounded-full text-sm hover:bg-gray-100 transition">
             Login
           </Link>
-          <Link to="/register" className="px-5 py-2 bg-[#111111] text-white rounded-full text-sm hover:opacity-80 transition">
+          <Link to="/register" className="px-5 py-2 bg-[#111111] text-white rounded-full text-sm hover:bg-[#111223] hover:opacity-80 transition">
             Sign Up
           </Link>
         </div>
       </header>
 
-      <section className="grid md:grid-cols-2 min-h-[80vh] items-center bg">
+      <section className="grid md:grid-cols-2 min-h-[80vh] items-center bg-[#f0f0f0]">
 
         <div className="flex flex-col justify-center px-10 md:px-20">
           <p className="text-[#6B7280] mb-4 tracking-wide uppercase text-xs">
