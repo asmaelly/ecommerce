@@ -1,10 +1,15 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-
+import LoadingSpinner from '../components/LoadingSpinner';
+import { CartSkeleton } from '../components/Skeletons'; // ✅ Import corrigé
 const CartPage = () => {
   const { cart, updateQuantity, removeItem } = useCart();
   const navigate = useNavigate();
+
+    if (loading) {
+    return <CartSkeleton />;
+  }
 
   const handleUpdateQuantity = (productId, newQuantity) => {
     if (newQuantity <= 0) {

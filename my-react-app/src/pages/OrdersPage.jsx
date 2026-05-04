@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getOrders } from '../services/api';
+import { getMyOrders } from '../services/api';
+import { OrdersSkeleton } from '../components/Skeletons'; // ✅ Import corrigé
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -33,7 +34,7 @@ const OrdersPage = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading orders...</div>;
+    return <OrdersSkeleton />;
   }
 
   if (orders.length === 0) {

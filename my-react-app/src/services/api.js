@@ -88,6 +88,7 @@ export const removeFromCart = (productId) =>
 export const createOrder = (orderData) => api.post('/orders', orderData);
 export const getMyOrders = () => api.get('/orders');
 export const getOrderById = (id) => api.get(`/orders/${id}`);
+export const getOrders = () => api.get('/orders'); 
 
 // ========== PROFILE ==========
 export const getProfile = () => api.get('/profile');

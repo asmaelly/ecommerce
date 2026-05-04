@@ -1,9 +1,9 @@
+// backend/config/database.js
 const mongoose = require('mongoose');
 const { seedProducts } = require('../utils/seedData');
 
 const connectDB = async () => {
     try {
-        // Utiliser une variable d'environnement pour l'URI MongoDB
         const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';
         
         await mongoose.connect(mongoURI);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const LoginPage = () => {
   const [identifier, setIdentifier] = useState('');
@@ -39,68 +40,77 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+   if (loading) {
+    return <LoadingSpinner message="Connexion en cours..." />;
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
-        <div>
-          <h2 className="text-3xl font-bold text-center text-gray-900">Connexion</h2>
-          <p className="text-center text-gray-600 mt-2">Connecte-toi à ton compte</p>
+  <div className="min-h-screen bg-[#F2FAFA] flex items-center justify-center font-sans">
+
+    <div className="w-full max-w-md">
+
+      <div className="bg-white border border-[#E5E7EB] rounded-2xl p-10">
+
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl font-medium text-[#111111] mb-2">
+            Connexion
+          </h2>
+          <p className="text-[#6B7280] text-sm">
+            Accède à ton compte DriveWise
+          </p>
         </div>
-        
+
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <p className="text-red-500 text-sm mb-6 text-center">
             {error}
-          </div>
+          </p>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email ou Nom d'utilisateur
-            </label>
-            <input
-              type="text"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="exemple@email.com ou pseudo"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Mot de passe
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="Ton mot de passe"
-              required
-            />
-          </div>
-          
+
+          <input
+            type="text"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            placeholder="Email ou username"
+            className="w-full px-4 py-3 border border-[#E5E7EB] rounded-full text-sm outline-none focus:border-black transition"
+            required
+          />
+
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Mot de passe"
+            className="w-full px-4 py-3 border border-[#E5E7EB] rounded-full text-sm outline-none focus:border-black transition"
+            required
+          />
+
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold disabled:bg-blue-400"
+            className={`w-full py-3 rounded-full text-sm transition ${
+              loading
+                ? 'bg-gray-200 text-[#6B7280]'
+                : 'bg-[#111111] text-white hover:opacity-80'
+            }`}
           >
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
-        
-        <p className="text-center text-sm text-gray-600">
+
+        <p className="text-center text-sm text-[#6B7280] mt-8">
           Pas encore de compte ?{' '}
-          <Link to="/register" className="text-blue-600 hover:text-blue-800 font-semibold">
+          <Link to="/register" className="text-[#111111] hover:underline">
             Créer un compte
           </Link>
         </p>
+
       </div>
+
     </div>
-  );
+  </div>
+);
 };
 
 export default LoginPage;

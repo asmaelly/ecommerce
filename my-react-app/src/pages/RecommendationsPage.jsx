@@ -46,15 +46,19 @@ const RecommendationsPage = () => {
       
       setProgress(100);
       
+      // ✅ CORRECTION ICI : response.data contient directement le tableau des recommandations
+      // ou response.data.recommendations selon la structure de votre API
+      const recommendations = response.data.recommendations || response.data;
+      
       // Rediriger vers la page des résultats après 1 seconde
       setTimeout(() => {
         navigate('/recommendedCars', { 
-          state: { recommendations: response.data.recommendations }
+          state: { recommendations: recommendations }
         });
-      }, 1000);
+      }, 2000);
       
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Erreur lors de la génération des recommandations:', error);
       setProgress(100);
       setTimeout(() => {
         navigate('/home'); // Redirection en cas d'erreur

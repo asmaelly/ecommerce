@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
@@ -7,7 +7,9 @@ import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import QuizRoute from './components/QuizRoute';
+import LoadingSpinner from './components/LoadingSpinner';
 
+// Import des pages
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import QuizPage from './pages/QuizPage';
@@ -20,7 +22,7 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import LandingPage from './pages/LandingPage';
 import RecommendationsPage from './pages/RecommendationsPage';
-import RecommendedCarsPage from './pages/RecommendedCarsPage'; // À créer
+import RecommendedCarsPage from './pages/RecommendedCarsPage';
 
 // Layout component for routes that require the navbar
 function AppLayout({ children }) {
@@ -52,33 +54,36 @@ function App() {
               </ProtectedRoute>
             } />
             
-            {/* ✅ CORRECTION ICI : RecommendationsPage au lieu de QuizPageCompleted */}
+            {/* Page de recommandations avec chargement */}
             <Route path="/recommendations" element={
               <ProtectedRoute>
                 <RecommendationsPage />
               </ProtectedRoute>
             } />
             
-            <Route path="/recommendedCars" element={
-              <ProtectedRoute>
-                  <QuizRoute>
-                    <AppLayout>
-                          <RecommendedCarsPage />
-                    </AppLayout>
-                  </QuizRoute>
-             </ProtectedRoute>
-            } />
-            {/* Routes protégées APRÈS le quiz - avec navbar */}
+            // Dans App.jsx
+<Route path="/recommendedCars" element={
+  <ProtectedRoute>
+    <QuizRoute>
+      <RecommendedCarsPage />  {/* ✅ Sans AppLayout, donc pas de Navbar */}
+    </QuizRoute>
+  </ProtectedRoute>
+} />
+            
+            {/* Page d'accueil après quiz */}
             <Route path="/home" element={
               <ProtectedRoute>
                 <QuizRoute>
                   <AppLayout>
-                    <HomePage />
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <HomePage />
+                    </Suspense>
                   </AppLayout>
                 </QuizRoute>
               </ProtectedRoute>
             } />
             
+            {/* Page produit */}
             <Route path="/product/:id" element={
               <ProtectedRoute>
                 <QuizRoute>
@@ -89,6 +94,7 @@ function App() {
               </ProtectedRoute>
             } />
             
+            {/* Page panier */}
             <Route path="/cart" element={
               <ProtectedRoute>
                 <QuizRoute>
@@ -99,6 +105,7 @@ function App() {
               </ProtectedRoute>
             } />
             
+            {/* Page checkout */}
             <Route path="/checkout" element={
               <ProtectedRoute>
                 <QuizRoute>
@@ -109,6 +116,7 @@ function App() {
               </ProtectedRoute>
             } />
             
+            {/* Page commandes */}
             <Route path="/orders" element={
               <ProtectedRoute>
                 <QuizRoute>
@@ -119,6 +127,7 @@ function App() {
               </ProtectedRoute>
             } />
             
+            {/* Page détail commande */}
             <Route path="/order/:id" element={
               <ProtectedRoute>
                 <QuizRoute>
@@ -129,6 +138,7 @@ function App() {
               </ProtectedRoute>
             } />
             
+            {/* Page profil */}
             <Route path="/profile" element={
               <ProtectedRoute>
                 <QuizRoute>

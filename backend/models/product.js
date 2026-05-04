@@ -28,8 +28,8 @@ const productSchema = new mongoose.Schema({
         default: "https://via.placeholder.com/300x200?text=Product"
     },
     available: {
-        type: Date,
-        default: Date.now
+        type: Boolean,
+        default: true,
     }
 });
 
