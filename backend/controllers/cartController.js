@@ -31,8 +31,15 @@ const addToCart = async (req, res, next) => {
         let cart = await Cart.findOne({ userId: req.userId });
         
         if (!cart) {
-            cart = new Cart({ userId: req.userId, items: [], total: 0 });
+            cart = new Cart({ 
+                userId: req.userId, 
+                items: [], 
+                total: 0 
+            });
         }
+        
+        // Utiliser pricePerDay au lieu de price
+        const productPrice = product.pricePerDay;
         
         const existingItem = cart.items.find(item => item.productId.toString() === productId);
         
@@ -41,19 +48,28 @@ const addToCart = async (req, res, next) => {
         } else {
             cart.items.push({
                 productId: product._id,
-                name: product.name,
-                price: product.price,
-                quantity: quantity
+                name: product.type, // Utiliser 'type' au lieu de 'name'
+                price: productPrice,
+                quantity: quantity,
+                image: product.image // Optionnel : ajouter l'image
             });
         }
         
-        cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        // Recalculer le total avec gestion des erreurs
+        let total = 0;
+        for (const item of cart.items) {
+            if (item.price && typeof item.price === 'number' && !isNaN(item.price)) {
+                total += item.price * item.quantity;
+            }
+        }
+        cart.total = total;
         cart.updatedAt = Date.now();
         
         await cart.save();
         res.json(cart);
     } catch (error) {
-        next(error);
+        console.error('Add to cart error:', error);
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -80,7 +96,15 @@ const updateCart = async (req, res, next) => {
             item.quantity = quantity;
         }
         
-        cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        // Recalculer le total
+        let total = 0;
+        for (const item of cart.items) {
+            if (item.price && typeof item.price === 'number' && !isNaN(item.price)) {
+                total += item.price * item.quantity;
+            }
+        }
+        cart.total = total;
+        cart.updatedAt = Date.now();
         await cart.save();
         
         res.json(cart);
@@ -100,7 +124,16 @@ const removeFromCart = async (req, res, next) => {
         }
         
         cart.items = cart.items.filter(item => item.productId.toString() !== req.params.productId);
-        cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        
+        // Recalculer le total
+        let total = 0;
+        for (const item of cart.items) {
+            if (item.price && typeof item.price === 'number' && !isNaN(item.price)) {
+                total += item.price * item.quantity;
+            }
+        }
+        cart.total = total;
+        cart.updatedAt = Date.now();
         await cart.save();
         
         res.json(cart);
@@ -109,4 +142,25 @@ const removeFromCart = async (req, res, next) => {
     }
 };
 
-module.exports = { getCart, addToCart, updateCart, removeFromCart };
+// @desc    Clear cart
+// @route   DELETE /api/cart/clear
+// @access  Private
+const clearCart = async (req, res, next) => {
+    try {
+        let cart = await Cart.findOne({ userId: req.userId });
+        if (!cart) {
+            return res.status(404).json({ error: 'Cart not found' });
+        }
+        
+        cart.items = [];
+        cart.total = 0;
+        cart.updatedAt = Date.now();
+        await cart.save();
+        
+        res.json({ message: 'Cart cleared successfully', cart });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { getCart, addToCart, updateCart, removeFromCart, clearCart };

@@ -15,6 +15,7 @@ import logo7 from '../assets/kia.svg';
 import logo8 from '../assets/mercedes.svg';
 import logo9 from '../assets/peugeot.svg';
 import logo10 from '../assets/renault.svg';
+import logo11 from '../assets/landingphoto.jpg';
 
 // Tableau des logos avec leurs noms
 const logos = [
@@ -98,8 +99,8 @@ const HomePage = () => {
       {/* HERO */}
       <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1493238792000-8113da705763"
-          className="absolute w-full h-full object-cover"
+          src={logo11}
+          className="absolute w-full h-full object-cover opacity-80"
           alt=""
         />
         <div className="absolute inset-0 bg-black/40" />
@@ -110,7 +111,23 @@ const HomePage = () => {
           <p className="text-sm text-white/80 max-w-md mx-auto">
             Une sélection moderne de véhicules adaptés à vos besoins
           </p>
+          
         </div>
+        {/* Ajoutez ceci dans votre section HERO */}
+<div className="absolute bottom-17 left-1/2 transform -translate-x-1/2">
+  <button
+    onClick={() => {
+      const carsSection = document.getElementById('cars-section');
+      carsSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }}
+    className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all duration-300 border border-white/20"
+  >
+    <span className="text-sm font-medium text-white">Découvrir nos véhicules</span>
+    <svg className="w-5 h-5 text-white group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+    </svg>
+  </button>
+</div>
       </section>
 
       {/* SECTION LOGOS PARTENAIRES */}
@@ -221,7 +238,7 @@ const HomePage = () => {
       </section>
 
       {/* MAIN PRODUCTS */}
-      <section className="border-t border-[#E5E7EB] pt-12">
+      <section id="cars-section" className="border-t border-[#E5E7EB] pt-12">
         <div className="max-w-6xl mx-auto px-6 flex justify-between items-center mb-10">
           <h2 className="text-xl font-medium text-[#111111]">
             Nos véhicules ({filtered.length})
