@@ -40,7 +40,6 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <Routes>
-            {/* Page d'accueil publique - sans navbar */}
             <Route path="/" element={<LandingPage />} />
             
             {/* Routes d'auth - sans navbar */}
@@ -61,27 +60,29 @@ function App() {
               </ProtectedRoute>
             } />
             
-            // Dans App.jsx
 <Route path="/recommendedCars" element={
   <ProtectedRoute>
     <QuizRoute>
-      <RecommendedCarsPage />  {/* ✅ Sans AppLayout, donc pas de Navbar */}
+      <RecommendedCarsPage /> 
     </QuizRoute>
   </ProtectedRoute>
 } />
             
-            {/* Page d'accueil après quiz */}
-            <Route path="/home" element={
-              <ProtectedRoute>
-                <QuizRoute>
-                  <AppLayout>
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <HomePage />
-                    </Suspense>
-                  </AppLayout>
-                </QuizRoute>
-              </ProtectedRoute>
-            } />
+<Route path="/home" element={
+  <ProtectedRoute>
+    <AppLayout>
+      <Suspense fallback={<LoadingSpinner />}>
+        <HomePage />
+      </Suspense>
+    </AppLayout>
+  </ProtectedRoute>
+} />
+
+<Route path="/quiz" element={
+  <ProtectedRoute>
+    <QuizPage />
+  </ProtectedRoute>
+} />
             
             {/* Page produit */}
             <Route path="/product/:id" element={

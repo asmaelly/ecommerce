@@ -14,14 +14,15 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    fuelType:{
+    fuelType: {
         type: String,
         required: true
     },
-    rating:{
+    rating: {
         type: Number,
         default: 0,
         min: 0,
+        max: 5
     },
     image: {
         type: String,
@@ -30,13 +31,10 @@ const productSchema = new mongoose.Schema({
     available: {
         type: Boolean,
         default: true,
-    },
-    stock: {
-        type: Number,
-        default: 1,
-        min: 0
+        required: true
     }
-
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('Product', productSchema);

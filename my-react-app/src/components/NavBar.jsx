@@ -11,113 +11,106 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const cartCount =
     cart.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/10 border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB]">
+      
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
-        {/* Logo */}
-        <Link to="/" className="text-xl font-bold tracking-wide">
-          Drive<span className="text-[#7D8597]">Wise</span>
+        <Link
+          to="/"
+          className="text-2xl font-semibold tracking-tight text-[#111111]"
+        >
+          Drive<span className="text-[#6B7280]">Wise</span>
         </Link>
 
-        {/* Desktop */}
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+        <div className="hidden md:flex items-center gap-10 text-sm">
 
-          <NavItem to="/">Accueil</NavItem>
           <NavItem to="/orders">Commandes</NavItem>
           <NavItem to="/profile">Profil</NavItem>
 
-          {/* Cart */}
-          <Link to="/cart" className="relative hover:opacity-80 transition">
-            🛒
+        </div>
+
+        <div className="hidden md:flex items-center gap-4">
+
+          <Link
+            to="/cart"
+            className="relative px-4 py-2 border border-[#E5E7EB] rounded-full text-sm hover:bg-[#F9FAFB] transition"
+          >
+            Cart
+
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-3 text-xs bg-white text-black px-1.5 rounded-full">
+              <span className="absolute -top-2 -right-2 bg-[#111111] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
           </Link>
 
-          {/* Auth */}
-          {user ? (
-            <div className="flex items-center gap-4 ml-4">
-              <span className="text-gray-300">
+          {user && (
+            <>
+              <span className="text-sm text-[#6B7280]">
                 {user.username}
               </span>
 
               <button
                 onClick={handleLogout}
-                className="px-4 py-1.5 border border-white/20 rounded-full hover:bg-white/10 transition"
+                className="px-5 py-2 bg-[#111111] text-white rounded-full text-sm hover:opacity-80 transition"
               >
                 Logout
               </button>
-            </div>
-          ) : (
-            <div className="flex gap-3 ml-4">
-              <Link
-                to="/login"
-                className="px-4 py-1.5 border border-white/20 rounded-full hover:bg-white/10 transition"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="px-4 py-1.5 bg-white text-black rounded-full font-semibold hover:opacity-90 transition"
-              >
-                Sign up
-              </Link>
-            </div>
+            </>
           )}
+
         </div>
 
-        {/* Mobile button */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-xl"
+          className="md:hidden text-2xl text-[#111111]"
         >
           ☰
         </button>
+
       </div>
 
-      {/* Mobile menu */}
       {open && (
-        <div className="md:hidden px-6 pb-6 space-y-3 text-sm">
+        <div className="md:hidden border-t border-[#E5E7EB] bg-white px-6 py-6 space-y-4">
 
-          <MobileItem to="/" onClick={() => setOpen(false)}>Accueil</MobileItem>
-          <MobileItem to="/orders" onClick={() => setOpen(false)}>Commandes</MobileItem>
-          <MobileItem to="/profile" onClick={() => setOpen(false)}>Profil</MobileItem>
-          <MobileItem to="/cart" onClick={() => setOpen(false)}>
-            Panier ({cartCount})
+          <MobileItem to="/" onClick={() => setOpen(false)}>
+            Accueil
           </MobileItem>
 
-          {user ? (
-            <>
-              <div className="text-gray-400 pt-2">{user.username}</div>
-              <button
-                onClick={handleLogout}
-                className="w-full border border-white/20 py-2 rounded-full"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <MobileItem to="/login" onClick={() => setOpen(false)}>Login</MobileItem>
-              <MobileItem to="/register" onClick={() => setOpen(false)}>Sign up</MobileItem>
-            </>
+          <MobileItem to="/orders" onClick={() => setOpen(false)}>
+            Commandes
+          </MobileItem>
+
+          <MobileItem to="/profile" onClick={() => setOpen(false)}>
+            Profil
+          </MobileItem>
+
+          <MobileItem to="/cart" onClick={() => setOpen(false)}>
+            Cart ({cartCount})
+          </MobileItem>
+
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="w-full py-3 bg-[#111111] text-white rounded-full text-sm"
+            >
+              Logout
+            </button>
           )}
+
         </div>
       )}
     </nav>
   );
 };
 
-/* Elegant Nav Item */
 const NavItem = ({ to, children }) => {
   return (
     <NavLink
@@ -125,8 +118,8 @@ const NavItem = ({ to, children }) => {
       className={({ isActive }) =>
         `transition ${
           isActive
-            ? "text-white font-semibold"
-            : "text-gray-300 hover:text-white"
+            ? 'text-[#111111] font-medium'
+            : 'text-[#6B7280] hover:text-[#111111]'
         }`
       }
     >
@@ -135,13 +128,12 @@ const NavItem = ({ to, children }) => {
   );
 };
 
-/* Mobile */
 const MobileItem = ({ to, children, onClick }) => {
   return (
     <Link
       to={to}
       onClick={onClick}
-      className="block text-gray-300 hover:text-white transition"
+      className="block text-sm text-[#6B7280] hover:text-[#111111] transition"
     >
       {children}
     </Link>

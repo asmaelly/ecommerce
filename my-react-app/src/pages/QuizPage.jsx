@@ -162,6 +162,22 @@ const QuizPage = () => {
     return null;
   };
 
+  // Après avoir soumis le quiz avec succès
+const handleQuizSubmit = async (answers) => {
+  try {
+    const response = await submitQuiz(answers);
+    
+    if (response.data.success) {
+      // Marquer le quiz comme complété
+      localStorage.setItem('quizCompleted', 'true');
+      
+      // Rediriger vers la page d'accueil
+      navigate('/home');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la soumission du quiz:', error);
+  }
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8">

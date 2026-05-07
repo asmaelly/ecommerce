@@ -1,18 +1,20 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
-
-  if (!user) {
+  const token = localStorage.getItem('token');
+  const isNewUser = localStorage.getItem('isNewUser') === 'true';
+  const hasCompletedQuiz = localStorage.getItem('quizCompleted') === 'true';
+  
+  if (!token) {
     return <Navigate to="/login" />;
   }
-
+  
+  // Pour les nouveaux utilisateurs qui n'ont pas fait le quiz
+  if (isNewUser && !hasCompletedQuiz) {
+    return <Navigate to="/quiz" />;
+  }
+  
   return children;
 };
 
