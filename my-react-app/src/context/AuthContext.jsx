@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { login as loginApi, register as registerApi, getProfile } from '../services/api';
+import { login as loginApi, register as registerApi, getProfile, getQuizResults } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -20,10 +20,12 @@ export const AuthProvider = ({ children }) => {
       try {
         const response = await getProfile();
         setUser(response.data);
-        // Check if user has completed quiz
-        checkQuizStatus();
+        // Vérifier le statut du quiz
+        await checkQuizStatus();
       } catch (error) {
+        console.error('Error checking user:', error);
         localStorage.removeItem('token');
+        localStorage.removeItem('quizCompleted');
       }
     }
     setLoading(false);
@@ -32,20 +34,27 @@ export const AuthProvider = ({ children }) => {
   const checkQuizStatus = async () => {
     try {
       const response = await getQuizResults();
-      if (response.data) {
+      if (response.data && response.data.completed) {
         setQuizCompleted(true);
+        localStorage.setItem('quizCompleted', 'true');
+      } else {
+        const saved = localStorage.getItem('quizCompleted') === 'true';
+        setQuizCompleted(saved);
       }
     } catch (error) {
-      setQuizCompleted(false);
+      console.error('Quiz status error:', error);
+      const saved = localStorage.getItem('quizCompleted') === 'true';
+      setQuizCompleted(saved);
     }
   };
-  
 
   const login = async (credentials) => {
     const response = await loginApi(credentials);
     localStorage.setItem('token', response.data.token);
     setUser(response.data.user);
     setQuizCompleted(false);
+    localStorage.setItem('quizCompleted', 'false');
+    localStorage.setItem('isNewUser', 'true');
     return response.data;
   };
 
@@ -54,17 +63,24 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', response.data.token);
     setUser(response.data.user);
     setQuizCompleted(false);
+    localStorage.setItem('quizCompleted', 'false');
+    localStorage.setItem('isNewUser', 'true');
     return response.data;
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('quizCompleted');
+    localStorage.removeItem('isNewUser');
+    localStorage.removeItem('quizAnswers');
     setUser(null);
     setQuizCompleted(false);
   };
 
   const completeQuiz = () => {
     setQuizCompleted(true);
+    localStorage.setItem('quizCompleted', 'true');
+    localStorage.setItem('isNewUser', 'false');
   };
 
   return (
