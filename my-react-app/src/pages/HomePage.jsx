@@ -4,7 +4,7 @@ import { getProduct } from '../services/api';
 import { HomePageSkeleton } from '../components/Skeletons';
 import NavBar from '../components/NavBar';
 
-// Import de vos 10 logos SVG
+// Import de vos logos SVG
 import logo1 from '../assets/audi.svg';
 import logo2 from '../assets/bmw.svg';
 import logo3 from '../assets/dacia.svg';
@@ -37,7 +37,7 @@ const HomePage = () => {
   const [openFilter, setOpenFilter] = useState(false);
 
   const [filters, setFilters] = useState({
-    type: '',
+    brand: '',     // Changé de 'type' à 'brand'
     fuel: '',
     sort: '',
     maxPrice: ''
@@ -60,28 +60,39 @@ const HomePage = () => {
 
   if (loading) return <HomePageSkeleton />;
 
+  // Fonction pour extraire la marque du nom du véhicule
+  const getBrandFromType = (type) => {
+    const brands = ['Dacia', 'BMW', 'Peugeot', 'Renault', 'Mercedes', 'Audi', 'Citroen', 'Fiat', 'Volvo', 'Ford', 'Hyundai', 'Jeep', 'Kia'];
+    for (const brand of brands) {
+      if (type?.toLowerCase().startsWith(brand.toLowerCase())) {
+        return brand;
+      }
+    }
+    return type?.split(' ')[0] || type; // Fallback: premier mot
+  };
+
   let filtered = [...products];
 
-  const carTypes = [...new Set(products.map(p => p.type))];
+  // Marques uniques (basées sur le début du type)
+  const carBrands = [...new Set(products.map(p => getBrandFromType(p.type)))].sort();
   const fuelTypes = [...new Set(products.map(p => p.fuelType))];
 
-  if (filters.type) {
-    filtered = filtered.filter(p => p.type === filters.type);
+  // Appliquer les filtres
+  if (filters.brand) {
+    filtered = filtered.filter(p => getBrandFromType(p.type) === filters.brand);
   }
 
   if (filters.fuel) {
     filtered = filtered.filter(p => p.fuelType === filters.fuel);
   }
 
-  if (filters.maxPrice) {
+  if (filters.maxPrice && filters.maxPrice !== '') {
     filtered = filtered.filter(p => p.pricePerDay <= parseFloat(filters.maxPrice));
   }
 
   if (filters.sort === 'asc') {
     filtered.sort((a, b) => a.pricePerDay - b.pricePerDay);
-  }
-
-  if (filters.sort === 'desc') {
+  } else if (filters.sort === 'desc') {
     filtered.sort((a, b) => b.pricePerDay - a.pricePerDay);
   }
 
@@ -90,7 +101,7 @@ const HomePage = () => {
   };
 
   const resetFilters = () => {
-    setFilters({ type: '', fuel: '', sort: '', maxPrice: '' });
+    setFilters({ brand: '', fuel: '', sort: '', maxPrice: '' });
   };
 
   return (
@@ -101,33 +112,33 @@ const HomePage = () => {
         <img
           src={logo11}
           className="absolute w-full h-full object-cover opacity-80"
-          alt=""
+          alt="Hero background"
         />
         <div className="absolute inset-0 bg-black/40" />
-        <div className="relative text-center text-white px-6">
-          <h1 className="text-4xl md:text-6xl font-popping mb-4">
+        <div className="relative text-center text-white px-6 z-10">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
             Trouvez votre voiture idéale
           </h1>
           <p className="text-sm text-white/80 max-w-md mx-auto">
             Une sélection moderne de véhicules adaptés à vos besoins
           </p>
-          
         </div>
-        {/* Ajoutez ceci dans votre section HERO */}
-<div className="absolute bottom-17 left-1/2 transform -translate-x-1/2">
-  <button
-    onClick={() => {
-      const carsSection = document.getElementById('cars-section');
-      carsSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }}
-    className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all duration-300 border border-white/20"
-  >
-    <span className="text-sm font-medium text-white">Découvrir nos véhicules</span>
-    <svg className="w-5 h-5 text-white group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-    </svg>
-  </button>
-</div>
+        
+        {/* Bouton Découvrir */}
+        <div className="absolute bottom-18 left-1/2 transform -translate-x-1/2">
+          <button
+            onClick={() => {
+              const carsSection = document.getElementById('cars-section');
+              carsSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+            className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all duration-300 border border-white/20"
+          >
+            <span className="text-sm font-medium text-white">Découvrir nos véhicules</span>
+            <svg className="w-5 h-5 text-white group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </button>
+        </div>
       </section>
 
       {/* SECTION LOGOS PARTENAIRES */}
@@ -144,18 +155,16 @@ const HomePage = () => {
           </div>
 
           <div className="relative">
-            {/* Effet de fondu sur les bords */}
             <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#F9FAFB] to-transparent z-10 pointer-events-none"></div>
             <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#F9FAFB] to-transparent z-10 pointer-events-none"></div>
             
             <div className="overflow-hidden">
-              <div className="flex gap-12 w-max animate-[scroll_25s_linear_infinite] hover:[animation-play-state:slowdown]">
+              <div className="flex gap-12 w-max animate-[scroll_25s_linear_infinite] hover:[animation-play-state:paused]">
                 
-                {/* Première série de logos */}
                 {logos.map((logo, index) => (
                   <div 
                     key={index} 
-                    className="flex-shrink-0 w-32 h-20 bg-white rounded-xl shadow-sm border border-[#E5E7EB] flex items-center justify-center p-4 hover:shadow-md transition-all duration-300 group"
+                    className="flex-shrink-0 w-32 h-20 bg-white rounded-xl shadow-sm border border-[#E5E7EB] flex items-center justify-center p-4 hover:shadow-md transition-all duration-300 group cursor-pointer"
                   >
                     <img 
                       src={logo.src} 
@@ -165,11 +174,10 @@ const HomePage = () => {
                   </div>
                 ))}
                 
-                {/* Deuxième série pour l'effet infini */}
                 {logos.map((logo, index) => (
                   <div 
                     key={`duplicate-${index}`} 
-                    className="flex-shrink-0 w-32 h-20 bg-white rounded-xl shadow-sm border border-[#E5E7EB] flex items-center justify-center p-4 hover:shadow-md transition-all duration-300 group"
+                    className="flex-shrink-0 w-32 h-20 bg-white rounded-xl shadow-sm border border-[#E5E7EB] flex items-center justify-center p-4 hover:shadow-md transition-all duration-300 group cursor-pointer"
                   >
                     <img 
                       src={logo.src} 
@@ -182,17 +190,12 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-
         </div>
 
         <style>{`
           @keyframes scroll {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-50%);
-            }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
           }
         `}</style>
       </section>
@@ -215,7 +218,7 @@ const HomePage = () => {
                 <img
                   src={product.image}
                   className="w-full h-40 object-cover"
-                  alt=""
+                  alt={product.type}
                 />
                 <div className="p-4 space-y-2">
                   <h3 className="text-sm font-medium text-[#111111]">
@@ -238,7 +241,7 @@ const HomePage = () => {
       </section>
 
       {/* MAIN PRODUCTS */}
-      <section id="cars-section" className="border-t border-[#E5E7EB] pt-12">
+      <section id="cars-section" className="border-t border-[#E5E7EB] pt-12 scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6 flex justify-between items-center mb-10">
           <h2 className="text-xl font-medium text-[#111111]">
             Nos véhicules ({filtered.length})
@@ -265,23 +268,25 @@ const HomePage = () => {
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-medium">Filtres</h2>
-              <button onClick={() => setOpenFilter(false)}>✕</button>
+              <button onClick={() => setOpenFilter(false)} className="text-xl">✕</button>
             </div>
 
+            {/* Filtre par Marque - Corrigé */}
             <div className="mb-5">
-              <p className="text-xs text-[#6B7280] mb-2">Type voiture</p>
+              <p className="text-xs text-[#6B7280] mb-2">Marque</p>
               <select
                 className="w-full border border-[#E5E7EB] rounded-xl px-3 py-2 text-sm"
-                value={filters.type}
-                onChange={(e) => updateFilter('type', e.target.value)}
+                value={filters.brand}
+                onChange={(e) => updateFilter('brand', e.target.value)}
               >
-                <option value="">Tous</option>
-                {carTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
+                <option value="">Toutes les marques</option>
+                {carBrands.map(brand => (
+                  <option key={brand} value={brand}>{brand}</option>
                 ))}
               </select>
             </div>
 
+            {/* Filtre par Carburant */}
             <div className="mb-5">
               <p className="text-xs text-[#6B7280] mb-2">Carburant</p>
               <select
@@ -296,6 +301,7 @@ const HomePage = () => {
               </select>
             </div>
 
+            {/* Tri par Prix */}
             <div className="mb-5">
               <p className="text-xs text-[#6B7280] mb-2">Prix</p>
               <select
@@ -309,6 +315,7 @@ const HomePage = () => {
               </select>
             </div>
 
+            {/* Budget max */}
             <div className="mb-6">
               <p className="text-xs text-[#6B7280] mb-2">Budget max (DH)</p>
               <input
@@ -350,7 +357,7 @@ const HomePage = () => {
                 <img
                   src={product.image}
                   className="w-full h-48 object-cover"
-                  alt=""
+                  alt={product.type}
                 />
                 <div className="p-5">
                   <h3 className="text-lg font-medium text-[#111111]">
@@ -386,15 +393,14 @@ const HomePage = () => {
       <section className="bg-white py-16 border-t border-[#E5E7EB]">
         <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-10 text-center">
           {[
-            "Réservation rapide",
-            "Voitures premium",
-            "Support 24/7"
+            { title: "Réservation rapide", icon: "⚡", desc: "Réservez votre véhicule en quelques clics" },
+            { title: "Voitures premium", icon: "🚗", desc: "Une flotte de véhicules récents et entretenus" },
+            { title: "Support 24/7", icon: "📞", desc: "Une assistance disponible à tout moment" }
           ].map((item, i) => (
-            <div key={i}>
-              <h3 className="text-lg font-medium text-[#111111] mb-2">{item}</h3>
-              <p className="text-sm text-[#6B7280]">
-                Une expérience simple et moderne pour tous vos trajets.
-              </p>
+            <div key={i} className="p-6 rounded-2xl hover:bg-gray-50 transition">
+              <div className="text-3xl mb-3">{item.icon}</div>
+              <h3 className="text-lg font-medium text-[#111111] mb-2">{item.title}</h3>
+              <p className="text-sm text-[#6B7280]">{item.desc}</p>
             </div>
           ))}
         </div>

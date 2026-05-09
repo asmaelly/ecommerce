@@ -41,9 +41,9 @@ const LoadingSpinner = ({
       
       {/* Points de chargement */}
       <div className="flex gap-2">
-        <div className="w-2 h-2 bg-grey-600 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+        <div className="w-2 h-2 bg-black-600 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
         <div className="w-2 h-2 bg-black-600 rounded-full animate-bounce" style={{ animationDelay: '5s' }}></div>
-        <div className="w-2 h-2 bg-grey-600 rounded-full animate-bounce" style={{ animationDelay: '5s' }}></div>
+        <div className="w-2 h-2 bg-black-600 rounded-full animate-bounce" style={{ animationDelay: '5s' }}></div>
       </div>
     </div>
   );

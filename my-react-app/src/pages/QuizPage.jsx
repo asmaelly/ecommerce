@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { saveQuizAnswers } from '../services/api';
 
 const QuizPage = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -13,7 +12,6 @@ const QuizPage = () => {
     features: []
   });
   const [loading, setLoading] = useState(false);
-  const { completeQuiz } = useAuth();
   const navigate = useNavigate();
 
   const quizQuestions = [
@@ -118,32 +116,26 @@ const QuizPage = () => {
     }
   };
 
+  // Fonction de soumission CORRIGÉE - sans appel API externe
   const handleSubmit = async () => {
     setLoading(true);
     console.log('Envoi des réponses:', answers);
     
     try {
-      const response = await saveQuizAnswers(answers);
-      console.log('Quiz sauvegardé avec succès:', response.data);
+      // Sauvegarder dans localStorage uniquement (pas d'appel API)
+      localStorage.setItem('quizCompleted', 'true');
+      localStorage.setItem('quizAnswers', JSON.stringify(answers));
+      localStorage.setItem('isNewUser', 'false');
       
-      // Marquer le quiz comme complété
-      completeQuiz();
+      // Petite pause pour montrer le chargement
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Rediriger vers la page de recommandations
-      navigate('/recommendations');
+      // Rediriger vers home ou recommendations
+      navigate('/home');
       
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde du quiz:', error);
-      
-      let errorMessage = 'Erreur lors de la sauvegarde du quiz.';
-      if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      alert(`Erreur: ${errorMessage}\n\nVeuillez réessayer.`);
-    } finally {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la sauvegarde. Veuillez réessayer.');
       setLoading(false);
     }
   };
@@ -162,22 +154,6 @@ const QuizPage = () => {
     return null;
   };
 
-  // Après avoir soumis le quiz avec succès
-const handleQuizSubmit = async (answers) => {
-  try {
-    const response = await submitQuiz(answers);
-    
-    if (response.data.success) {
-      // Marquer le quiz comme complété
-      localStorage.setItem('quizCompleted', 'true');
-      
-      // Rediriger vers la page d'accueil
-      navigate('/home');
-    }
-  } catch (error) {
-    console.error('Erreur lors de la soumission du quiz:', error);
-  }
-};
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8">

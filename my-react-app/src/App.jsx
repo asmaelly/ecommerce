@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
 
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -23,6 +24,7 @@ import ProfilePage from './pages/ProfilePage';
 import LandingPage from './pages/LandingPage';
 import RecommendationsPage from './pages/RecommendationsPage';
 import RecommendedCarsPage from './pages/RecommendedCarsPage';
+import FavorisPage from './pages/FavorisPage';
 
 // Layout component for routes that require the navbar
 function AppLayout({ children }) {
@@ -39,117 +41,122 @@ function App() {
     <Router>
       <AuthProvider>
         <CartProvider>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            
-            {/* Routes d'auth - sans navbar */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            
-            {/* Quiz route - sans navbar */}
-            <Route path="/quiz" element={
-              <ProtectedRoute> 
-                <QuizPage />
-              </ProtectedRoute>
-            } />
-            
-            {/* Page de recommandations avec chargement */}
-            <Route path="/recommendations" element={
-              <ProtectedRoute>
-                <RecommendationsPage />
-              </ProtectedRoute>
-            } />
-            
-<Route path="/recommendedCars" element={
-  <ProtectedRoute>
-    <QuizRoute>
-      <RecommendedCarsPage /> 
-    </QuizRoute>
-  </ProtectedRoute>
-} />
-            
-<Route path="/home" element={
-  <ProtectedRoute>
-    <AppLayout>
-      <Suspense fallback={<LoadingSpinner />}>
-        <HomePage />
-      </Suspense>
-    </AppLayout>
-  </ProtectedRoute>
-} />
-
-<Route path="/quiz" element={
-  <ProtectedRoute>
-    <QuizPage />
-  </ProtectedRoute>
-} />
-            
-            {/* Page produit */}
-            <Route path="/product/:id" element={
-              <ProtectedRoute>
-                <QuizRoute>
+          <WishlistProvider>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              
+              {/* Routes d'auth - sans navbar */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              
+              {/* Quiz route - sans navbar */}
+              <Route path="/quiz" element={
+                <ProtectedRoute> 
+                  <QuizPage />
+                </ProtectedRoute>
+              } />
+              
+              {/* Page de recommandations avec chargement */}
+              <Route path="/recommendations" element={
+                <ProtectedRoute>
+                  <RecommendationsPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/recommendedCars" element={
+                <ProtectedRoute>
+                  <QuizRoute>
+                    <RecommendedCarsPage /> 
+                  </QuizRoute>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/home" element={
+                <ProtectedRoute>
                   <AppLayout>
-                    <ProductPage />
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <HomePage />
+                    </Suspense>
                   </AppLayout>
-                </QuizRoute>
-              </ProtectedRoute>
-            } />
-            
-            {/* Page panier */}
-            <Route path="/cart" element={
-              <ProtectedRoute>
-                <QuizRoute>
+                </ProtectedRoute>
+              } />
+              
+              {/* Page produit */}
+              <Route path="/product/:id" element={
+                <ProtectedRoute>
+                  <QuizRoute>
+                    <AppLayout>
+                      <ProductPage />
+                    </AppLayout>
+                  </QuizRoute>
+                </ProtectedRoute>
+              } />
+              
+              {/* Page panier */}
+              <Route path="/cart" element={
+                <ProtectedRoute>
+                  <QuizRoute>
+                    <AppLayout>
+                      <CartPage />
+                    </AppLayout>
+                  </QuizRoute>
+                </ProtectedRoute>
+              } />
+              
+              {/* Page favoris */}
+              <Route path="/favoris" element={
+                <ProtectedRoute>
                   <AppLayout>
-                    <CartPage />
+                    <FavorisPage />
                   </AppLayout>
-                </QuizRoute>
-              </ProtectedRoute>
-            } />
-            
-            {/* Page checkout */}
-            <Route path="/checkout" element={
-              <ProtectedRoute>
-                <QuizRoute>
-                  <AppLayout>
-                    <CheckoutPage />
-                  </AppLayout>
-                </QuizRoute>
-              </ProtectedRoute>
-            } />
-            
-            {/* Page commandes */}
-            <Route path="/orders" element={
-              <ProtectedRoute>
-                <QuizRoute>
-                  <AppLayout>
-                    <OrdersPage />
-                  </AppLayout>
-                </QuizRoute>
-              </ProtectedRoute>
-            } />
-            
-            {/* Page détail commande */}
-            <Route path="/order/:id" element={
-              <ProtectedRoute>
-                <QuizRoute>
-                  <AppLayout>
-                    <OrderDetailPage />
-                  </AppLayout>
-                </QuizRoute>
-              </ProtectedRoute>
-            } />
-            
-            {/* Page profil */}
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <QuizRoute>
-                  <AppLayout>
-                    <ProfilePage />
-                  </AppLayout>
-                </QuizRoute>
-              </ProtectedRoute>
-            } />
-          </Routes>
+                </ProtectedRoute>
+              } />
+              
+              {/* Page checkout */}
+              <Route path="/checkout" element={
+                <ProtectedRoute>
+                  <QuizRoute>
+                    <AppLayout>
+                      <CheckoutPage />
+                    </AppLayout>
+                  </QuizRoute>
+                </ProtectedRoute>
+              } />
+              
+              {/* Page commandes */}
+              <Route path="/orders" element={
+                <ProtectedRoute>
+                  <QuizRoute>
+                    <AppLayout>
+                      <OrdersPage />
+                    </AppLayout>
+                  </QuizRoute>
+                </ProtectedRoute>
+              } />
+              
+              {/* Page détail commande */}
+              <Route path="/order/:id" element={
+                <ProtectedRoute>
+                  <QuizRoute>
+                    <AppLayout>
+                      <OrderDetailPage />
+                    </AppLayout>
+                  </QuizRoute>
+                </ProtectedRoute>
+              } />
+              
+              {/* Page profil */}
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <QuizRoute>
+                    <AppLayout>
+                      <ProfilePage />
+                    </AppLayout>
+                  </QuizRoute>
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </Router>

@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
       setQuizCompleted(false);
     }
   };
+  
 
   const login = async (credentials) => {
     const response = await loginApi(credentials);

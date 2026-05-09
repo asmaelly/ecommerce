@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { CartSkeleton } from '../components/Skeletons'; 
+import cartEmptyImg from '../assets/cart.svg'; 
 
 const CartPage = () => {
   const { cart, updateQuantity, removeItem } = useCart();
@@ -30,23 +31,23 @@ const CartPage = () => {
     return cart.items.reduce((sum, item) => sum + item.quantity, 0);
   };
 
-  // Vérification du chargement (optionnel)
+  // Vérification du chargement
   if (!cart) {
     return <CartSkeleton />;
   }
 
   if (!cart.items || cart.items.length === 0) {
     return (
-      <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center font-sans">
+      <div className="max-h-screen bg-[#F9FAFB] justify-center items-center font-sans py-16">
         <div className="text-center max-w-md mx-auto px-6">
-          <div className="text-6xl mb-6">🛒</div>
+          <img src={cartEmptyImg} alt="Empty Cart" className="w-15 h-15 mx-auto mb-6 opacity-80" />
           <h1 className="text-2xl font-bold text-[#111111] mb-4">Votre panier est vide</h1>
           <p className="text-[#6B7280] mb-8">
             Vous n'avez pas encore ajouté de véhicules à votre panier.
           </p>
           <Link 
             to="/home" 
-            className="inline-block px-6 py-3 bg-[#111111] text-white rounded-full hover:opacity-80 transition"
+            className="inline-block px-6 py-3 bg-[#FBBF24] text-white rounded-full hover:opacity-80 hover:shadow hover:bg-[#F59E0B] transition"
           >
             Découvrir nos véhicules
           </Link>
@@ -123,8 +124,8 @@ const CartPage = () => {
             ))}
           </div>
           
-          {/* Résumé de la commande */}
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 h-fit sticky top-24">
+          {/* Résumé de la commande - Version desktop (sticky) */}
+          <div className="hidden lg:block bg-white rounded-2xl border border-[#E5E7EB] p-6 h-fit sticky top-24">
             <h2 className="text-xl font-bold text-[#111111] mb-4">Résumé</h2>
             
             <div className="space-y-3 mb-4">
@@ -160,6 +161,31 @@ const CartPage = () => {
             </Link>
           </div>
         </div>
+
+        {/* Résumé de la commande - Version mobile (en bas de page) */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5E7EB] p-4 shadow-lg z-50">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-[#6B7280] text-sm">Total</span>
+            <span className="text-xl font-bold text-smart-blue">{total.toFixed(2)} DH</span>
+          </div>
+          <div className="flex gap-3">
+            <button 
+              onClick={handleCheckout}
+              className="flex-1 bg-[#111111] text-white py-3 rounded-full hover:opacity-80 transition font-medium text-sm"
+            >
+              Commander
+            </button>
+            <Link 
+              to="/home" 
+              className="flex-1 text-center py-3 border border-[#E5E7EB] rounded-full text-sm text-[#6B7280] hover:text-[#111111] hover:border-[#111111] transition"
+            >
+              Continuer
+            </Link>
+          </div>
+        </div>
+
+        {/* Espace en bas pour le footer mobile (évite que le contenu soit caché) */}
+        <div className="lg:hidden h-28" />
       </div>
     </div>
   );
