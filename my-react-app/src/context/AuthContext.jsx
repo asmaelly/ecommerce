@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { login as loginApi, register as registerApi, getProfile, getQuizResults } from '../services/api';
+import { login as loginApi, register as registerApi, getProfile } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -20,32 +20,15 @@ export const AuthProvider = ({ children }) => {
       try {
         const response = await getProfile();
         setUser(response.data);
-        // Vérifier le statut du quiz
-        await checkQuizStatus();
+        // ✅ Utiliser uniquement localStorage (pas d'appel API)
+        const completed = localStorage.getItem('quizCompleted') === 'true';
+        setQuizCompleted(completed);
       } catch (error) {
         console.error('Error checking user:', error);
         localStorage.removeItem('token');
-        localStorage.removeItem('quizCompleted');
       }
     }
     setLoading(false);
-  };
-
-  const checkQuizStatus = async () => {
-    try {
-      const response = await getQuizResults();
-      if (response.data && response.data.completed) {
-        setQuizCompleted(true);
-        localStorage.setItem('quizCompleted', 'true');
-      } else {
-        const saved = localStorage.getItem('quizCompleted') === 'true';
-        setQuizCompleted(saved);
-      }
-    } catch (error) {
-      console.error('Quiz status error:', error);
-      const saved = localStorage.getItem('quizCompleted') === 'true';
-      setQuizCompleted(saved);
-    }
   };
 
   const login = async (credentials) => {
@@ -92,7 +75,6 @@ export const AuthProvider = ({ children }) => {
       register,
       logout,
       completeQuiz,
-      checkQuizStatus
     }}>
       {children}
     </AuthContext.Provider>

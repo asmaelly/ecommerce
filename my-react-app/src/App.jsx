@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -25,7 +25,8 @@ import LandingPage from './pages/LandingPage';
 import RecommendationsPage from './pages/RecommendationsPage';
 import RecommendedCarsPage from './pages/RecommendedCarsPage';
 import FavorisPage from './pages/FavorisPage';
-
+import AgenciesPage from './pages/AgenciesPage';
+import ContactPage from './pages/ContactPage';
 // Layout component for routes that require the navbar
 function AppLayout({ children }) {
   return (
@@ -35,6 +36,11 @@ function AppLayout({ children }) {
     </>
   );
 }
+
+// Simple auth check function
+const isAuthenticated = () => {
+  return !!localStorage.getItem('token');
+};
 
 function App() {
   return (
@@ -49,12 +55,12 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               
-              {/* Quiz route - sans navbar */}
+              {/* Quiz route - SIMPLE CHECK WITHOUT ProtectedRoute */}
               <Route path="/quiz" element={
-                <ProtectedRoute> 
-                  <QuizPage />
-                </ProtectedRoute>
-              } />
+    <ProtectedRoute>
+      <QuizPage />
+    </ProtectedRoute>
+  } />
               
               {/* Page de recommandations avec chargement */}
               <Route path="/recommendations" element={
@@ -112,6 +118,20 @@ function App() {
                 </ProtectedRoute>
               } />
               
+<Route path="/agencies" element={
+  <ProtectedRoute>
+    <AppLayout>
+      <AgenciesPage />
+    </AppLayout>
+  </ProtectedRoute>
+} />
+<Route path="/contact" element={
+  <ProtectedRoute>
+    <AppLayout>
+      <ContactPage />
+    </AppLayout>
+  </ProtectedRoute>
+} />
               {/* Page checkout */}
               <Route path="/checkout" element={
                 <ProtectedRoute>

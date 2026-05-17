@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -21,6 +21,8 @@
   --font-sans: 'Montserrat', sans-serif;
   --font-heading: 'Playfair Display', serif;
   --font-monospace: 'Courier New', monospace;
+  --font-special: 'Manrope', sans-serif;
+   
 }
 
 /* BASE */

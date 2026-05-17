@@ -14,6 +14,8 @@ const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const quizRoutes = require('./routes/quizRoutes');
+const agencyRoutes = require('./routes/agencyRoutes');
+const contactRoutes = require('./routes/contactRoutes.js');
 
 // Import des middlewares
 const errorHandler = require('./middleware/errorHandler');
@@ -31,7 +33,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use("/uploads", express.static("uploads"));
 // ========== CONNEXION DATABASE ==========
 connectDB();
 
@@ -42,8 +44,9 @@ app.use('/api', cartRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', profileRoutes);
 app.use('/api', quizRoutes);
-
-// ========== ROUTE DE TEST ==========
+app.use('/api', agencyRoutes);
+app.use('/api/contact', contactRoutes); 
+// // ========== ROUTE DE TEST ==========
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Backend fonctionne' });
 });

@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import cartIcon from '../assets/cart.svg';
+import cartIcon from '../assets/cart2.svg';
 import favIcon from '../assets/fav.svg';
 
 const Navbar = () => {
@@ -79,7 +79,7 @@ const Navbar = () => {
     <header className="w-full sticky top-0 z-50">
       
       {/* Bandeau défilant (marquee) */}
-      <div className="bg-[#FFD700] text-black text-[10px] md:text-xs py-2 md:py-2.5 uppercase tracking-[0.2em] font-medium overflow-hidden whitespace-nowrap">
+      <div className="bg-[#FFD700] text-black text-[10px] md:text-xs py-2 md:py-2.5 uppercase tracking-[0.2em] font-medium overflow-hidden whitespace-nowrap font-semibold">
         <div className="animate-marquee inline-block">
           <span className="mx-4 md:mx-8"> Location de véhicules premium </span>
           <span className="mx-4 md:mx-8"> Livraison gratuite sur 500 KM</span>
@@ -113,7 +113,7 @@ const Navbar = () => {
                 </svg>
               </button>
 
-              <Link to="/" className="group hidden sm:flex items-center">
+              <Link to="/home" className="group hidden sm:flex items-center">
                 <div className="w-10 h-10 md:w-14 md:h-14 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
                   <div className="w-8 h-8 md:w-10 md:h-10 bg-[#FFD700] rounded-full flex items-center justify-center">
                     <span className="text-black font-bold text-lg">DW</span>
@@ -124,7 +124,7 @@ const Navbar = () => {
 
             {/* Logo central - Brand */}
             <div className="flex-[2] md:flex-1 flex justify-center">
-              <Link to="/" className="flex flex-col items-center group text-center">
+              <Link to="/home" className="flex flex-col items-center group text-center">
                 <span className={`text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-[0.1em] md:tracking-[0.15em] text-white group-hover:scale-105 transition-all duration-500`}>
                   DRIVE<span className="text-[#FFD700]">WISE</span>
                 </span>
@@ -219,7 +219,7 @@ const Navbar = () => {
         <div className={`md:hidden absolute top-full left-0 w-full bg-[#111111]/98 backdrop-blur-2xl border-b border-white/10 transition-all duration-500 ease-in-out overflow-hidden ${isMobileMenuOpen ? 'max-h-[80vh] opacity-100 py-8' : 'max-h-0 opacity-0 py-0'}`}>
           <nav className="flex flex-col items-center space-y-6 text-sm font-medium tracking-wider text-gray-300 uppercase">
             <Link to="/home" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FFD700] transition">Accueil</Link>
-            <button onClick={scrollToCars} className="hover:text-[#FFD700] transition">Nos véhicules</button>
+            <button onClick={scrollToCars} className="hover:text-[#FFD700] transition uppercase">NOS VEHICULES</button>
             <Link to="/offres" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FFD700] transition">Offres</Link>
             <Link to="/favoris" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FFD700] transition">Favoris ({wishlistCount})</Link>
             <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FFD700] transition">Commandes</Link>
@@ -245,7 +245,7 @@ const Navbar = () => {
           <Link to="/favoris" className="hover:text-[#FFD700] transition-colors">Favoris</Link>
           <button onClick={scrollToCars} className="hover:text-[#FFD700] transition-colors cursor-pointer">Nos véhicules</button>
           <Link to="/offres" className="hover:text-[#FFD700] transition-colors">Offres</Link>
-          <Link to="/agences" className="hover:text-[#FFD700] transition-colors">Nos agences</Link>
+          <Link to="/agencies" className="hover:text-[#FFD700] transition-colors">Nos agences</Link>
           <Link to="/contact" className="hover:text-[#FFD700] transition-colors">Contact</Link>
         </nav>
       </div>

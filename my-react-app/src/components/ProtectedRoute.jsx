@@ -1,20 +1,38 @@
+// frontend/src/components/ProtectedRoute.jsx
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
+  const location = useLocation();
+  
+  console.log("ProtectedRoute - path:", location.pathname);
+  console.log("ProtectedRoute - token:", !!token);
+  
+  // 1. Pas de token -> redirige vers login
+  if (!token) {
+    console.log("No token, redirect to login");
+    return <Navigate to="/login" replace />;
+  }
+  
+  // 2. Si on est sur /quiz, on laisse passer SANS vérifier le quiz
+  if (location.pathname === '/quiz') {
+    console.log("On quiz page, letting through");
+    return children;
+  }
+  
+  // 3. Pour les autres pages, vérifier si le quiz est complété
   const isNewUser = localStorage.getItem('isNewUser') === 'true';
   const hasCompletedQuiz = localStorage.getItem('quizCompleted') === 'true';
   
-  if (!token) {
-    return <Navigate to="/login" />;
-  }
+  console.log("isNewUser:", isNewUser, "hasCompletedQuiz:", hasCompletedQuiz);
   
-  // Pour les nouveaux utilisateurs qui n'ont pas fait le quiz
   if (isNewUser && !hasCompletedQuiz) {
-    return <Navigate to="/quiz" />;
+    console.log("Need quiz, redirecting to /quiz");
+    return <Navigate to="/quiz" replace />;
   }
   
+  console.log("Access granted");
   return children;
 };
 

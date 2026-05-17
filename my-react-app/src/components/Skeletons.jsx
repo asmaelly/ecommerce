@@ -1,7 +1,6 @@
 // src/components/Skeletons.jsx
 import React from 'react';
 
-// ✅ Pour HomePage.jsx
 export const ProductCardSkeleton = () => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
@@ -17,7 +16,6 @@ export const ProductCardSkeleton = () => {
   );
 };
 
-// ✅ Pour HomePage.jsx
 export const HomePageSkeleton = () => {
   return (
     <div className="container mx-auto px-4 py-8">
@@ -31,7 +29,6 @@ export const HomePageSkeleton = () => {
   );
 };
 
-// ✅ Pour CartPage.jsx
 export const CartSkeleton = () => {
   return (
     <div className="container mx-auto px-4 py-8">
@@ -63,7 +60,6 @@ export const CartSkeleton = () => {
   );
 };
 
-// ✅ Pour ProductPage.jsx
 export const ProductDetailSkeleton = () => {
   return (
     <div className="container mx-auto px-4 py-8">
@@ -82,7 +78,6 @@ export const ProductDetailSkeleton = () => {
   );
 };
 
-// ✅ Pour OrdersPage.jsx (optionnel)
 export const OrdersSkeleton = () => {
   return (
     <div className="container mx-auto px-4 py-8">

@@ -1,185 +1,90 @@
-// backend/controllers/quizController.js
 const Quiz = require('../models/Quiz');
 const Product = require('../models/Product');
 
-// Sauvegarder les réponses du quiz et générer des recommandations
+// Sauvegarder les réponses du quiz
 const saveQuizAnswers = async (req, res, next) => {
   try {
     const { answers } = req.body;
     
-    console.log('📝 Réponses du quiz reçues:', answers);
+    console.log(' Réponses du quiz reçues:', answers);
     
-    // Logique de recommandation basée sur les réponses
+    // Logique de recommandation améliorée
     let query = {};
     
-    // 1. FILTRER PAR BUDGET (pricePerDay)
+    // Budget filter
     if (answers.budget) {
-      if (answers.budget === 'low') {
-        query.pricePerDay = { $lt: 500 };
-        console.log('💰 Filtre budget: Moins de 500 DH');
-      } else if (answers.budget === 'medium') {
-        query.pricePerDay = { $gte: 500, $lte: 1000 };
-        console.log('💰 Filtre budget: Entre 500 et 1000 DH');
-      } else if (answers.budget === 'high') {
-        query.pricePerDay = { $gt: 1000 };
-        console.log('💰 Filtre budget: Plus de 1000 DH');
+      if (answers.budget === 'low') query.pricePerDay = { $lt: 500 };
+      else if (answers.budget === 'medium') query.pricePerDay = { $gte: 500, $lte: 1000 };
+      else if (answers.budget === 'high') query.pricePerDay = { $gt: 1000 };
+    }
+    
+    // Fuel type filter
+    if (answers.fuelType && ['Essence', 'Diesel', 'Hybride', 'Électrique'].includes(answers.fuelType)) {
+      query.fuelType = answers.fuelType;
+    }
+    
+    // Car type filter (map to product types)
+    if (answers.carType) {
+      if (answers.carType === 'Citadine') {
+        query.type = { $in: ['Dacia Sandero', 'Citroën C3', 'Peugeot 208', 'Renault Clio'] };
+      } else if (answers.carType === 'SUV') {
+        query.type = { $in: ['Dacia Duster', 'Citroën C5 Aircross', 'Peugeot 3008', 'Renault Captur'] };
+      } else if (answers.carType === 'Berline') {
+        query.type = { $in: ['Dacia Logan', 'BMW Série 3', 'Tesla Model 3'] };
       }
     }
     
-    // 2. Filtrer par type de voiture
-    if (answers.carType && answers.carType !== '') {
-      const carTypeMap = {
-        'Citadine': ['Sandero', 'Clio', '208', 'C3', 'Golf', 'Yaris'],
-        'SUV': ['Duster', '3008', 'Captur', 'C5', 'Tiguan', 'X3', 'X5', 'Q5', 'GLC', 'Kuga'],
-        'Berline': ['Logan', '508', 'Série', 'A3', 'A4', 'Model 3', 'Megane', 'Talisman', 'Classe'],
-        'Utilitaire': ['Berlingo', 'Partner', 'Kangoo']
-      };
-      
-      const keywords = carTypeMap[answers.carType] || [];
-      if (keywords.length > 0) {
-        query.type = { $in: keywords.map(k => new RegExp(k, 'i')) };
-      }
-      console.log(`🚗 Filtre type: ${answers.carType}`);
-    }
-    
-    // 3. Filtrer par carburant
-    if (answers.fuelType && answers.fuelType !== '') {
-      const validFuelTypes = ['Essence', 'Diesel', 'Hybride', 'Électrique'];
-      if (validFuelTypes.includes(answers.fuelType)) {
-        query.fuelType = answers.fuelType;
-        console.log(`⛽ Filtre carburant: ${answers.fuelType}`);
-      } else {
-        console.log(`⚠️ Carburant non reconnu: ${answers.fuelType}, filtre ignoré`);
-      }
-    }
-    
-    console.log('🔍 Requête MongoDB:', JSON.stringify(query, null, 2));
-    
-    // Récupérer les produits correspondants
     let products = await Product.find(query);
-    console.log(`📊 ${products.length} produit(s) trouvé(s) avec les filtres`);
     
-    // Afficher les détails des produits trouvés
-    products.forEach(p => {
-      console.log(`   - ${p.type}: ${p.pricePerDay} DH (${p.fuelType})`);
-    });
-    
-    // Si aucun résultat, élargir les filtres
+    // If no products found, relax the query
     if (products.length === 0) {
-      console.log('⚠️ Aucun produit trouvé, élargissement des filtres...');
-      
+      console.log('No products found with strict filters, relaxing query...');
       const relaxedQuery = {};
       if (answers.budget) {
         if (answers.budget === 'low') relaxedQuery.pricePerDay = { $lt: 500 };
         else if (answers.budget === 'medium') relaxedQuery.pricePerDay = { $gte: 500, $lte: 1000 };
         else if (answers.budget === 'high') relaxedQuery.pricePerDay = { $gt: 1000 };
       }
-      if (answers.fuelType && ['Essence', 'Diesel', 'Hybride', 'Électrique'].includes(answers.fuelType)) {
-        relaxedQuery.fuelType = answers.fuelType;
-      }
-      
-      console.log('🔍 Requête élargie:', JSON.stringify(relaxedQuery, null, 2));
       products = await Product.find(relaxedQuery);
-      console.log(`📊 ${products.length} produit(s) trouvé(s) avec filtres élargis`);
     }
     
-    // Calculer un score de pertinence pour chaque produit
+    // Calculate scores
     const recommendations = products.map(product => {
-      let score = 50; // Score de base
+      let score = 50;
       
-      // Bonus budget (0-30 points) - CORRIGÉ (supprimé la ligne dupliquée)
-      if (answers.budget === 'low' && product.pricePerDay < 500) {
-        score += 30;
-      } else if (answers.budget === 'medium' && product.pricePerDay >= 500 && product.pricePerDay <= 1000) {
-        score += 30;
-      } else if (answers.budget === 'high' && product.pricePerDay > 1000) {
-        score += 30;
-      } else if (answers.budget === 'high' && product.pricePerDay > 800) {
-        score += 15; // Bonus partiel pour les voitures proches du premium
-      }
+      // Budget score
+      if (answers.budget === 'low' && product.pricePerDay < 500) score += 30;
+      else if (answers.budget === 'medium' && product.pricePerDay >= 500 && product.pricePerDay <= 1000) score += 30;
+      else if (answers.budget === 'high' && product.pricePerDay > 1000) score += 30;
       
-      // Bonus type de voiture (0-20 points)
-      if (answers.carType === 'Berline') {
-        if (product.type.includes('BMW') || product.type.includes('Mercedes') || 
-            product.type.includes('Audi') || product.type.includes('Tesla') ||
-            product.type.includes('508') || product.type.includes('Talisman') ||
-            product.type.includes('Série') || product.type.includes('Classe')) {
-          score += 20;
-        } else if (product.type.includes('Logan')) {
-          score += 10;
-        }
-      } else if (answers.carType === 'Citadine') {
-        if (product.type.includes('Sandero') || product.type.includes('Clio') || 
-            product.type.includes('208') || product.type.includes('C3') || product.type.includes('Golf')) {
-          score += 20;
-        }
-      } else if (answers.carType === 'SUV') {
-        if (product.type.includes('Duster') || product.type.includes('3008') || 
-            product.type.includes('Captur') || product.type.includes('C5') ||
-            product.type.includes('X3') || product.type.includes('X5') || 
-            product.type.includes('Q5') || product.type.includes('GLC') ||
-            product.type.includes('Tiguan')) {
-          score += 20;
+      // Fuel type score
+      if (answers.fuelType && product.fuelType === answers.fuelType) score += 20;
+      
+      // Car type score (simple matching based on product name)
+      if (answers.carType) {
+        if (answers.carType === 'Citadine' && 
+            ['Dacia Sandero', 'Citroën C3', 'Peugeot 208', 'Renault Clio'].includes(product.type)) {
+          score += 25;
+        } else if (answers.carType === 'SUV' && 
+                   ['Dacia Duster', 'Citroën C5 Aircross', 'Peugeot 3008', 'Renault Captur'].includes(product.type)) {
+          score += 25;
+        } else if (answers.carType === 'Berline' && 
+                   ['Dacia Logan', 'BMW Série 3', 'Tesla Model 3'].includes(product.type)) {
+          score += 25;
         }
       }
       
-      // Bonus carburant (0-20 points)
-      if (answers.fuelType && product.fuelType === answers.fuelType) {
-        score += 20;
-      }
+      // Rating score
+      if (product.rating) score += Math.min(15, product.rating * 3);
       
-      // Bonus rating (0-15 points)
-      if (product.rating) {
-        score += Math.min(15, product.rating * 3);
-      }
-      
-      // Pénalité si le prix ne correspond pas au budget
-      if (answers.budget === 'high' && product.pricePerDay <= 1000) {
-        score -= 20;
-      } else if (answers.budget === 'low' && product.pricePerDay > 600) {
-        score -= 15;
-      } else if (answers.budget === 'medium' && (product.pricePerDay < 300 || product.pricePerDay > 1200)) {
-        score -= 10;
-      }
-      
-      return {
-        ...product.toObject(),
-        score: Math.min(100, Math.max(0, Math.round(score)))
-      };
+      return { ...product.toObject(), score: Math.min(100, score) };
     });
     
-    // Filtrer pour enlever les voitures qui ne correspondent vraiment pas au budget
-    let filteredRecommendations = recommendations;
-    if (answers.budget === 'high') {
-      filteredRecommendations = recommendations.filter(r => r.pricePerDay > 1000);
-      console.log(`💰 Filtrage final: garde uniquement les voitures > 1000 DH (${filteredRecommendations.length} restantes)`);
-    } else if (answers.budget === 'low') {
-      filteredRecommendations = recommendations.filter(r => r.pricePerDay < 500);
-      console.log(`💰 Filtrage final: garde uniquement les voitures < 500 DH (${filteredRecommendations.length} restantes)`);
-    } else if (answers.budget === 'medium') {
-      filteredRecommendations = recommendations.filter(r => r.pricePerDay >= 500 && r.pricePerDay <= 1000);
-      console.log(`💰 Filtrage final: garde uniquement les voitures entre 500-1000 DH (${filteredRecommendations.length} restantes)`);
-    }
+    recommendations.sort((a, b) => b.score - a.score);
+    const topRecommendations = recommendations.slice(0, 10);
     
-    // S'assurer qu'on a au moins des recommandations
-    if (filteredRecommendations.length === 0 && recommendations.length > 0) {
-      console.log('⚠️ Aucune voiture après filtrage budget, retour des meilleures scores');
-      filteredRecommendations = recommendations;
-    }
-    
-    // Trier par score décroissant
-    filteredRecommendations.sort((a, b) => b.score - a.score);
-    
-    // Garder les 10 meilleures recommandations
-    const topRecommendations = filteredRecommendations.slice(0, 10);
-    
-    console.log(`🏆 Top ${topRecommendations.length} recommandations générées`);
-    topRecommendations.forEach((r, i) => {
-      console.log(`   ${i+1}. ${r.type}: ${r.pricePerDay} DH (score: ${r.score})`);
-    });
-    
-    // Sauvegarder les réponses du quiz
-    const quiz = await Quiz.findOneAndUpdate(
+    // Save quiz
+    await Quiz.findOneAndUpdate(
       { userId: req.userId },
       { 
         answers, 
@@ -189,61 +94,47 @@ const saveQuizAnswers = async (req, res, next) => {
       { upsert: true, new: true }
     );
     
-    res.json({ 
-      message: 'Quiz answers saved', 
-      recommendations: topRecommendations 
-    });
-    
+    res.json({ message: 'Quiz saved', recommendations: topRecommendations });
   } catch (error) {
-    console.error('❌ Erreur saveQuizAnswers:', error);
+    console.error('❌ Erreur:', error);
     next(error);
   }
 };
 
-// Récupérer les résultats du quiz
 const getQuizResults = async (req, res, next) => {
   try {
-    const quiz = await Quiz.findOne({ userId: req.userId }).populate('recommendations');
+    const quiz = await Quiz.findOne({ userId: req.userId });
     
     if (!quiz) {
-      return res.status(404).json({ error: 'No quiz found for this user' });
+      return res.json({ completed: false, answers: null });
     }
     
     res.json({
+      completed: true,
       answers: quiz.answers,
-      recommendations: quiz.recommendations,
-      createdAt: quiz.createdAt
+      recommendations: quiz.recommendations
     });
   } catch (error) {
+    console.error('❌ Erreur getQuizResults:', error);
     next(error);
   }
 };
 
-// Récupérer les recommandations
 const getRecommendations = async (req, res, next) => {
   try {
     const quiz = await Quiz.findOne({ userId: req.userId });
     
     if (!quiz) {
-      return res.status(404).json({ error: 'No quiz found for this user' });
+      return res.status(404).json({ error: 'No quiz found' });
     }
     
     const recommendations = await Product.find({
-      _id: { $in: quiz.recommendations }
+      _id: { $in: quiz.recommendations || [] }
     });
     
-    // Ajouter les scores aux recommandations
-    const recommendationsWithScores = recommendations.map(rec => {
-      const savedRec = quiz.recommendationsData || [];
-      const savedScore = savedRec.find(r => r._id === rec._id);
-      return {
-        ...rec.toObject(),
-        score: savedScore?.score || 70
-      };
-    });
-    
-    res.json(recommendationsWithScores);
+    res.json({ recommendations: recommendations });
   } catch (error) {
+    console.error('❌ Erreur getRecommendations:', error);
     next(error);
   }
 };

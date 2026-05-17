@@ -103,5 +103,11 @@ export const getRecommendations = async () => {
   const response = await api.get('/quiz/recommendations');
   return response;
 };
+// ========== AGENCIES ==========
+export const getAgencies = () => api.get('/agencies');
+export const getAgencyById = (id) => api.get(`/agencies/${id}`);
+export const getAgenciesByCity = (city) => api.get(`/agencies/city/${city}`);
+export const createMessage = (messageData) => api.post('/messages', messageData);
+export const sendContactMessage = (formData) => api.post('/contact', formData);
 
 export default api;

@@ -7,6 +7,7 @@ const CheckoutPage = () => {
   const { cart, loadCart } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     shippingAddress: '',
     phone: ''
@@ -22,14 +23,14 @@ const CheckoutPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       await createOrder(formData);
-      await loadCart(); // Refresh cart (should be empty)
+      await loadCart();
       alert('Order placed successfully!');
       navigate('/orders');
     } catch (error) {
-      console.error('Error creating order:', error);
+      console.error(error);
       alert('Failed to place order. Please try again.');
     } finally {
       setLoading(false);
@@ -42,67 +43,112 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-      
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div>
-          <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="min-h-screen bg-[#F9FAFB] font-['Manrope'] py-10">
+      <div className="max-w-6xl mx-auto px-6">
+
+        {/* TITLE */}
+        <h1 className="text-3xl font-semibold text-[#111111] mb-8">
+          Checkout
+        </h1>
+
+        <div className="grid lg:grid-cols-2 gap-8">
+
+          {/* FORM */}
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white border border-[#ECECEC] rounded-[24px] p-6 space-y-6"
+          >
+
+            {/* ADDRESS */}
             <div>
-              <label className="block text-sm font-medium mb-2">Shipping Address</label>
+              <label className="text-xs uppercase tracking-wider text-[#9CA3AF]">
+                Adresse de livraison
+              </label>
+
               <textarea
                 name="shippingAddress"
                 value={formData.shippingAddress}
                 onChange={handleChange}
                 required
-                rows="3"
-                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your full address"
+                rows="4"
+                placeholder="Entrer votre adresse complète"
+                className="w-full mt-2 p-4 rounded-xl border border-[#ECECEC] bg-[#FAFAFA] text-sm focus:bg-white focus:outline-none"
               />
             </div>
-            
+
+            {/* PHONE */}
             <div>
-              <label className="block text-sm font-medium mb-2">Phone Number</label>
+              <label className="text-xs uppercase tracking-wider text-[#9CA3AF]">
+                Téléphone
+              </label>
+
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your phone number"
+                placeholder="06 00 00 00 00"
+                className="w-full mt-2 p-4 rounded-xl border border-[#ECECEC] bg-[#FAFAFA] text-sm focus:bg-white focus:outline-none"
               />
             </div>
-            
+
+            {/* BUTTON */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+              className="w-full bg-[#111111] text-white py-3 rounded-full text-sm hover:opacity-90 transition disabled:opacity-50"
             >
-              {loading ? 'Placing Order...' : `Place Order - $${cart.total?.toFixed(2)}`}
+              {loading
+                ? 'Validation...'
+                : `Confirmer la commande - ${cart.total?.toFixed(2)} DH`}
             </button>
+
           </form>
-        </div>
-        
-        <div className="bg-gray-50 rounded-lg p-6 h-fit">
-          <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-          
-          <div className="space-y-3 mb-4">
-            {cart.items.map((item) => (
-              <div key={item.productId} className="flex justify-between text-sm">
-                <span>{item.name} x{item.quantity}</span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-          
-          <div className="border-t pt-4">
-            <div className="flex justify-between font-bold text-lg">
-              <span>Total</span>
-              <span>${cart.total?.toFixed(2) || '0.00'}</span>
+
+          {/* SUMMARY */}
+          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 h-fit">
+
+            <h2 className="text-lg font-semibold text-[#111111] mb-5">
+              Résumé de commande
+            </h2>
+
+            <div className="space-y-3 mb-6">
+
+              {cart.items.map((item) => (
+                <div
+                  key={item.productId}
+                  className="flex justify-between text-sm text-[#6B7280]"
+                >
+                  <span>
+                    {item.name} × {item.quantity}
+                  </span>
+
+                  <span className="text-[#111111]">
+                    {(item.price * item.quantity).toFixed(2)} DH
+                  </span>
+                </div>
+              ))}
+
             </div>
+
+            <div className="border-t border-[#ECECEC] pt-4">
+
+              <div className="flex justify-between font-semibold text-[#111111]">
+                <span>Total</span>
+                <span>{cart.total?.toFixed(2)} DH</span>
+              </div>
+
+              <p className="text-xs text-[#9CA3AF] mt-1">
+                TVA incluse
+              </p>
+
+            </div>
+
           </div>
+
         </div>
+
       </div>
     </div>
   );
