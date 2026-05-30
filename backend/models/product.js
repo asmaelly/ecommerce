@@ -34,7 +34,7 @@ const productSchema = new mongoose.Schema({
         required: true
     }
 }, {
-    timestamps: true
-});
+    timestamps: true  // Ajoute createdAt et updatedAt automatiquement
+}); 
 
 module.exports = mongoose.model('Product', productSchema);

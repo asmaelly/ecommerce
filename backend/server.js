@@ -34,6 +34,7 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use("/uploads", express.static("uploads"));
+
 // ========== CONNEXION DATABASE ==========
 connectDB();
 

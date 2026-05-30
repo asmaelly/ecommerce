@@ -24,15 +24,15 @@ const saveQuizAnswers = async (req, res, next) => {
     }
     
     // Car type filter (map to product types)
-    if (answers.carType) {
-      if (answers.carType === 'Citadine') {
-        query.type = { $in: ['Dacia Sandero', 'Citroën C3', 'Peugeot 208', 'Renault Clio'] };
-      } else if (answers.carType === 'SUV') {
-        query.type = { $in: ['Dacia Duster', 'Citroën C5 Aircross', 'Peugeot 3008', 'Renault Captur'] };
-      } else if (answers.carType === 'Berline') {
-        query.type = { $in: ['Dacia Logan', 'BMW Série 3', 'Tesla Model 3'] };
-      }
-    }
+if (answers.carType) {
+  if (answers.carType === 'Citadine') {
+    query.type = { $in: ['Dacia Sandero', 'Citroën C3', 'Peugeot 208', 'Renault Clio', 'Renault Zoe', 'Dacia Spring', 'Peugeot e-208', 'BMW i3'] };
+  } else if (answers.carType === 'SUV') {
+    query.type = { $in: ['Dacia Duster', 'Citroën C5 Aircross', 'Peugeot 3008', 'Renault Captur', 'Peugeot 2008', 'BMW X3', 'BMW X5', 'Audi Q3', 'Audi e-tron', 'Mercedes EQA', 'Renault Arkana'] };
+  } else if (answers.carType === 'Berline') {
+    query.type = { $in: ['Dacia Logan', 'BMW Série 3', 'Peugeot 508', 'Renault Talisman', 'Audi A3', 'Audi A4', 'BMW Série 1', 'BMW Série 5', 'Mercedes Classe A', 'Mercedes Classe C', 'Mercedes Classe E', 'Citroën C4'] };
+  }
+}
     
     let products = await Product.find(query);
     
